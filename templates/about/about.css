@@ -1,0 +1,99 @@
+/* About page styles and subtle transition to match site */
+.page-content{
+  transition:background .35s ease, color .25s ease;
+}
+
+/* light background for About page */
+body{
+  background: linear-gradient(135deg, var(--pastel-start) 0%, var(--pastel-end) 100%);
+  color: var(--text-dark);
+}
+
+:root{--about-accent:#0ea5a4}
+
+.about-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:18px;
+  margin-top:18px;
+}
+
+/* Updated attractive, professional background + transitions */
+.about-card{
+  background:linear-gradient(180deg, #e8faf8, #f0f7ff);
+  padding:18px;
+  border-radius:12px;
+  box-shadow:0 8px 20px rgba(2,6,23,0.06);
+  color:#07243b;
+  
+  /* NEW: smooth animation + interaction */
+  transition:
+    transform .35s ease,
+    box-shadow .35s ease,
+    background .35s ease;
+  transform-origin:center;
+  will-change:transform,box-shadow;
+  animation: fadeInUp .5s ease both;
+}
+
+/* Hover effects: lift, subtle scale, glow */
+.about-card:hover{
+  transform:translateY(-6px) scale(1.02);
+  box-shadow:0 12px 28px rgba(0,0,0,0.12);
+
+  /* Slightly richer gradient on hover */
+  background:linear-gradient(180deg, #dff7f4, #e7f1ff);
+}
+
+/* subtle stagger for grid children */
+.about-grid .about-card{
+  opacity:0;
+  transform: translateY(8px);
+  animation: fadeInUp .5s ease both;
+}
+.about-grid .about-card:nth-child(1){animation-delay:0.05s}
+.about-grid .about-card:nth-child(2){animation-delay:0.12s}
+.about-grid .about-card:nth-child(3){animation-delay:0.20s}
+.about-grid .about-card:nth-child(4){animation-delay:0.28s}
+
+/* Buttons and links */
+.about-card .btn{
+  background: linear-gradient(90deg,var(--about-accent), #06b6b4);
+  color: var(--text-dark);
+  border-radius:10px;
+  padding:0.6rem 1rem;
+  transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.about-card .btn:hover{ transform:translateY(-3px); filter:brightness(1.03) }
+
+@keyframes fadeInUp{
+  from{ opacity:0; transform: translateY(12px) scale(.998) }
+  to{ opacity:1; transform: translateY(0) scale(1) }
+}
+
+.about-card h3{
+  margin-top:0;
+  color:var(--about-accent);
+}
+
+.cta .btn{
+  margin-right:10px;
+}
+
+.page-footer {
+  background: rgba(2,6,23,0.06);
+  padding: 2rem 0;
+  text-align: center;
+  margin-top: 4rem;
+  backdrop-filter: blur(6px);
+}
+
+.page-footer .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.page-footer p {
+  color: #0b1220;
+}

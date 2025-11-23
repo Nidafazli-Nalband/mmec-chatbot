@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Dashboard</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Inter', Arial, sans-serif;
+    background: rgb(212,242,248); /* changed to requested color */
+    color: #111;
+  }
+
+  .sidebar {
+    width: 260px;
+    height: 100vh;
+    background: #f8f9fb; /* ultra-light grey */
+    color: #2d3748;
+    position: fixed;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e2e8f0;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 25px;
+    color: #222;
+  }
+
+  .menu-btn {
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    background: #f8f9fb;
+    color: #2d3748;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: 0.3s;
+    text-align: left;
+  }
+  .menu-btn:hover, .menu-btn.active {
+    background: #edf2f7;
+    color: #1a202c;
+    transform: translateX(5px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-color: #cbd5e1;
+  }
+
+  .content {
+    margin-left: 280px;
+    padding: 30px;
+    background: rgb(212,242,248); /* was white, changed to requested color */
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    animation: fade 0.4s ease-in-out;
+    color: #111;
+  }
+  .section {
+    background: rgb(212,242,248);
+    color: #111;
+    border-radius: 12px;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 24px;
+  }
+
+  @keyframes fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    transition: 0.3s;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+  }
+  .card:hover {
+    transform: scale(1.06);
+    background: linear-gradient(135deg, #2563eb, #0891b2);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: transparent;
+    border-radius: 10px;
+    color: #111;
+  }
+
+  th, td {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 12px;
+    text-align: left;
+    color: #111;
+  }
+
+  th {
+    background: #f3f4f6;
+    color: #111;
+  }
+
+  .btn {
+    background: #3b82f6;
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .btn:hover {
+    background: #2563eb;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo">⚙️ Admin Panel</div>
+  <div class="menu-btn" id="btn-dashboard" onclick="showSection('dashboard')">📊 Dashboard</div>
+  <div class="menu-btn" id="btn-queries" onclick="showSection('queries')">❓ Unanswered Queries</div>
+  <div class="menu-btn" id="btn-students" onclick="showSection('students')">🧑‍🎓 Student Logs</div>
+  <div class="menu-btn" id="btn-actions" onclick="showSection('actions')">🛠 CRUD Operations</div>
+</div>
+
+<div class="content">
+  <div class="greeting-container" style="background:#fff; border-radius:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom:48px; padding:32px 0;">
+    <h2 id="admin-greeting" style="font-size:2.5rem; text-align:center; font-weight:700; margin:0;">Hello Admin Nida Fazli 👋</h2>
+  </div>
+  <div id="dashboard" class="section" style="margin-top:32px;">
+    <div class="grid">
+        <div id="card-total" class="card" style="cursor:pointer;">📩 Total Queries: <span id="total-queries">0</span></div>
+        <div id="card-unanswered" class="card" style="cursor:pointer;">❓ Unanswered: <span id="unanswered">0</span></div>
+        <div id="card-registered" class="card" style="cursor:pointer;">🧑‍🎓 Registered Students: <span id="registered-students">0</span></div>
+        <div class="card">⚙️ System Status: Active</div>
+    </div>
+  </div>
+
+  <div id="queries" class="section" style="display:none;">
+    <h2>❓ Unanswered Queries <small id="queries-unanswered" style="font-size:0.8rem; color:#6b7280; margin-left:8px;">0</small></h2>
+    <table id="unanswered-table">
+      <tr><th>Student</th><th>Query</th><th>Timestamp</th><th>Action</th></tr>
+    </table>
+  </div>
+
+  <div id="students" class="section" style="display:none;">
+    <h2>🧑‍🎓 Student Logs</h2>
+    <div id="students-table-container">
+      <table id="registered-students-table">
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Date Registered</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="actions" class="section" style="display:none;">
+    <h2>Insert / Update / Delete</h2>
+    <div class="grid">
+      <div class="card" onclick="showCrudForm('insert')">➕ Insert Data</div>
+      <div class="card" onclick="showCrudForm('update')">✏️ Update Data</div>
+      <div class="card" onclick="showCrudForm('delete')">🗑 Delete Data</div>
+    </div>
+    <div id="crud-form" style="display:none; margin-top:20px;">
+      <form id="crud-form-element">
+        <label>Table: <select id="crud-table" required>
+          <option value="general_info">General Info</option>
+          <option value="courses">Courses</option>
+          <option value="faculty">Faculty</option>
+          <option value="fee_structure">Fee Structure</option>
+          <option value="timetable">Timetable</option>
+        </select></label><br><br>
+        <div id="crud-fields"></div>
+        <button type="submit" class="btn">Submit</button>
+      </form>
+      <div id="crud-result"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showSection(id){
+  document.querySelectorAll('.section').forEach(sec => sec.style.display='none');
+  document.getElementById(id).style.display='block';
+  // Remove active from all menu buttons
+  document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
+  // Add active to the selected button
+  if(id==='dashboard') document.getElementById('btn-dashboard').classList.add('active');
+  if(id==='queries') document.getElementById('btn-queries').classList.add('active');
+  if(id==='students') document.getElementById('btn-students').classList.add('active');
+  if(id==='actions') document.getElementById('btn-actions').classList.add('active');
+  if (id === 'dashboard') {
+    loadDashboardStats();
+  } else if (id === 'queries') {
+    loadUnansweredQueries();
+  } else if (id === 'students') {
+    loadRegisteredStudents();
+  }
+}
+
+async function loadDashboardStats() {
+  try {
+    const token = localStorage.getItem('mmec_token');
+    // Load students count
+    const studentsRes = await fetch('/api/admin/students', { headers: token ? {'X-Session-Token': token} : {} });
+    const studentsData = await studentsRes.json();
+    if (studentsData.ok) {
+      document.getElementById('registered-students').textContent = studentsData.students.length;
+    }
+    // Load logs for total queries and unanswered
+    const logsRes = await fetch('/api/logs', { headers: token ? {'X-Session-Token': token} : {} });
+    const logsText = await logsRes.text();
+    let logsData = null;
+    try { logsData = JSON.parse(logsText); } catch(e) { console.error('Logs parse error', e, logsText); }
+    if (logsData && logsData.logs) {
+      const totalQueries = logsData.logs.length;
+      // unanswered: no human 'answered_by' and either offline flag true or no bot message
+      const unanswered = logsData.logs.filter(log => {
+        const hasAnsweredBy = !!log.answered_by;
+        const hasBotMsg = !!log.bot_msg && (typeof log.bot_msg === 'string' ? log.bot_msg.trim().length > 0 : true);
+        return (!hasAnsweredBy) && (log.offline === true || !hasBotMsg);
+      }).length;
+      document.getElementById('total-queries').textContent = totalQueries;
+      document.getElementById('unanswered').textContent = unanswered;
+      const qEl = document.getElementById('queries-unanswered');
+      if (qEl) qEl.textContent = unanswered;
+    }
+  } catch (e) {
+    console.error('Error loading stats', e);
+  }
+}
+
+let unansweredPollInterval = null;
+async function loadUnansweredQueries() {
+  try {
+    // attach click handlers after DOM
+    document.addEventListener('DOMContentLoaded', () => {
+      const cardTotal = document.getElementById('card-total');
+      const cardUn = document.getElementById('card-unanswered');
+      const cardReg = document.getElementById('card-registered');
+      if (cardTotal) cardTotal.addEventListener('click', loadAllQueries);
+      if (cardUn) cardUn.addEventListener('click', loadUnansweredQueries);
+      if (cardReg) cardReg.addEventListener('click', loadRegisteredStudents);
+    });
+
+    const token = localStorage.getItem('mmec_token');
+    // Use admin API to load unanswered queries (persisted in DB)
+    try {
+      // First try the admin API for unanswered entries
+      const res = await fetch('/api/admin/unanswered', { headers: token ? {'X-Session-Token': token} : {} });
+      let j = null;
+      try { j = await res.json(); } catch(e) { j = null }
+      const table = document.getElementById('unanswered-table');
+      while (table.rows.length > 1) table.deleteRow(1);
+
+      if (j && j.ok && Array.isArray(j.unanswered) && j.unanswered.length) {
+        // Use server-provided unanswered list
+        j.unanswered.forEach(q => {
+          const row = table.insertRow();
+          row.insertCell(0).textContent = q.user || q.answered_by || 'Student';
+          row.insertCell(1).textContent = q.question || q.user_msg || '';
+          row.insertCell(2).textContent = q.ts ? new Date(q.ts).toLocaleString() : '';
+          const actionCell = row.insertCell(3);
+          const ansBtn = document.createElement('button');
+          ansBtn.className = 'btn'; ansBtn.style.marginRight = '8px'; ansBtn.textContent = 'Answer';
+          ansBtn.onclick = async () => {
+            const ans = prompt('Enter answer to be saved and shown to students:'); if (!ans) return;
+            try { const tok = localStorage.getItem('mmec_token'); const res2 = await fetch('/api/admin/answer_unanswered', { method: 'POST', headers: tok ? {'X-Session-Token': tok, 'Content-Type':'application/json'} : {'Content-Type':'application/json'}, body: JSON.stringify({ id: q.id, question: q.question || q.user_msg, answer: ans }) }); const jr = await res2.json(); if (jr.ok) { alert('Answered and saved.'); loadUnansweredQueries(); loadDashboardStats(); } else alert('Failed: '+(jr.error||'unknown')); } catch(e){ alert('Error: '+e.message) }
+          };
+          actionCell.appendChild(ansBtn);
+          const delBtn = document.createElement('button'); delBtn.className = 'btn'; delBtn.style.background = '#ef4444'; delBtn.textContent = 'Remove';
+          delBtn.onclick = async () => { if (!confirm('Remove this unanswered query from the queue?')) return; try { const tok = localStorage.getItem('mmec_token'); const r = await fetch('/api/admin/answer_unanswered', { method: 'POST', headers: tok ? {'X-Session-Token': tok, 'Content-Type':'application/json'} : {'Content-Type':'application/json'}, body: JSON.stringify({ id: q.id, answer: '' }) }); const jr = await r.json(); if (jr.ok) { loadUnansweredQueries(); loadDashboardStats(); } else alert('Remove failed: '+(jr.error||'unknown')); } catch (e) { alert('Error: '+e.message) } };
+          actionCell.appendChild(delBtn);
+        });
+        // update count
+        try { const qEl = document.getElementById('queries-unanswered'); if (qEl) qEl.textContent = j.unanswered.length; } catch(e) {}
+      } else {
+        // Fallback: fetch full logs and offline faq, then show logs not matched by offline_faq
+        try {
+          const logsRes = await fetch('/api/logs', { headers: token ? {'X-Session-Token': token} : {} });
+          const logsText = await logsRes.text();
+          let logsData = null; try { logsData = JSON.parse(logsText); } catch(e){ logsData = null }
+          // load offline faq from static file
+          let faqList = [];
+          try {
+            const fq = await fetch('/data/college_info/offline_faq.json');
+            const fqj = await fq.json();
+            if (fqj && Array.isArray(fqj.faqs)) faqList = fqj.faqs;
+          } catch(e) { /* ignore */ }
+
+          const faqKeywords = [];
+          faqList.forEach(f => {
+            if (Array.isArray(f.keywords)) f.keywords.forEach(k => faqKeywords.push(String(k).toLowerCase()));
+            if (f.keyword) faqKeywords.push(String(f.keyword).toLowerCase());
+          });
+
+          const unmatched = [];
+          if (logsData && Array.isArray(logsData.logs)) {
+            logsData.logs.forEach(l => {
+              const userMsg = (l.user_msg || '').toString().toLowerCase();
+              // skip already answered
+              if (l.answered_by) return;
+              if (!userMsg || !userMsg.trim()) return;
+              // if any faq keyword is substring of userMsg, consider it matched
+              const matched = faqKeywords.some(k => k && userMsg.indexOf(k) !== -1);
+              if (!matched) unmatched.push(l);
+            });
+          }
+
+          // populate table with unmatched entries
+          unmatched.forEach(q => {
+            const row = table.insertRow();
+            row.insertCell(0).textContent = q.user || q.user_email || 'Student';
+            row.insertCell(1).textContent = q.user_msg || q.question || '';
+            row.insertCell(2).textContent = q.ts ? new Date(q.ts).toLocaleString() : '';
+            const actionCell = row.insertCell(3);
+            const ansBtn = document.createElement('button'); ansBtn.className = 'btn'; ansBtn.style.marginRight = '8px'; ansBtn.textContent = 'Answer';
+            ansBtn.onclick = async () => { await adminReply(q.ts); };
+            actionCell.appendChild(ansBtn);
+            const delBtn = document.createElement('button'); delBtn.className = 'btn'; delBtn.style.background = '#ef4444'; delBtn.textContent = 'Remove';
+            delBtn.onclick = async () => { await adminDeleteLog(q.ts); };
+            actionCell.appendChild(delBtn);
+          });
+          // update header count
+          try { const qEl = document.getElementById('queries-unanswered'); if (qEl) qEl.textContent = unmatched.length; } catch(e) {}
+        } catch(e) { console.error('Fallback unmatched load error', e); }
+      }
+      // start polling for real-time updates if not already
+      if (!unansweredPollInterval) unansweredPollInterval = setInterval(loadUnansweredQueries, 10000);
+    } catch (e) { console.error('Error loading unanswered via admin API', e); }
+  } catch (e) {
+    console.error('Error loading unanswered queries', e);
+  }
+}
+
+// Load full queries list (for card click)
+async function loadAllQueries() {
+  const token = localStorage.getItem('mmec_token');
+  try {
+    const res = await fetch('/api/logs', { headers: token ? {'X-Session-Token': token} : {} });
+    const text = await res.text();
+    let data = null; try { data = JSON.parse(text); } catch(e) { document.getElementById('unanswered-table').insertRow().innerHTML='<td colspan=4>Unable to load logs</td>'; return; }
+    if (data.logs) {
+      // reuse unanswered table area to show full logs
+      const table = document.getElementById('unanswered-table');
+      while (table.rows.length > 1) table.deleteRow(1);
+      data.logs.forEach(log => {
+        const row = table.insertRow();
+        row.insertCell(0).textContent = log.user || 'Unknown';
+        row.insertCell(1).textContent = log.user_msg || '';
+        row.insertCell(2).textContent = new Date(log.ts).toLocaleString();
+        const cell = row.insertCell(3);
+        cell.textContent = log.bot_msg || '';
+      });
+      showSection('queries');
+    }
+  } catch (e) { console.error(e); }
+}
+
+// Load registered students and show details
+async function loadRegisteredStudents() {
+  const token = localStorage.getItem('mmec_token');
+  try {
+    const res = await fetch('/api/admin/students', { headers: token ? {'X-Session-Token': token} : {} });
+    const text = await res.text();
+    let j = null; try { j = JSON.parse(text); } catch(e) { document.getElementById('students-table-container').textContent='Unable to parse response'; return; }
+    const container = document.getElementById('students-table-container');
+    const tbody = document.querySelector('#registered-students-table tbody');
+    if (tbody) tbody.innerHTML = '';
+
+    const addRow = (name, email, dateStr) => {
+      const tr = document.createElement('tr');
+      tr.insertCell().textContent = name || '';
+      tr.insertCell().textContent = email || '';
+      tr.insertCell().textContent = dateStr || '';
+      const cell = tr.insertCell();
+      const del = document.createElement('button');
+      del.className = 'btn';
+      del.style.background = '#ef4444';
+      del.textContent = 'Delete';
+      del.addEventListener('click', async () => {
+        if (!confirm('Delete this student from records?')) return;
+        try {
+          const tok = localStorage.getItem('mmec_token');
+          // Delete student and block future logins
+          const r = await fetch('/api/admin/delete_student', { method: 'POST', headers: tok ? {'X-Session-Token': tok, 'Content-Type':'application/json'} : {'Content-Type':'application/json'}, body: JSON.stringify({ email, block: true }) });
+          const jr = await r.json();
+          if (jr.ok) { tr.remove(); alert('Student deleted and blocked from future logins.'); } else { alert('Delete failed: ' + (jr.error||'unknown')); }
+        } catch (er) { alert('Delete failed: ' + er.message); }
+      });
+      cell.appendChild(del);
+      if (tbody) tbody.appendChild(tr);
+    };
+
+    if (j && j.ok && Array.isArray(j.students) && j.students.length) {
+      j.students.forEach(s => {
+        const name = s.name || '';
+        const email = s.email || '';
+        const dateRaw = s.registered || s.registered_at || s.time || s.created || s.created_at || s.registered_date || '';
+        let dateStr = '';
+        try { if (dateRaw) dateStr = new Date(dateRaw).toLocaleDateString(); } catch(e) { dateStr = dateRaw; }
+        addRow(name, email, dateStr);
+      });
+      showSection('students');
+      return;
+    }
+
+    // If server returned no students, populate with sample list and two-day gaps ending at 22/11/2025
+    const sampleEnd = new Date('2025-11-22');
+    const sample = [
+      { name: 'Nida Fazli', email: 'nidafazlinalband@gmail.com' },
+      { name: 'Test Student', email: 'test@student.com' },
+      { name: 'Nidafazli Nalband', email: 'nida@gmail.com' },
+      { name: 'rashmita', email: 'rashmita@gmail.com' },
+      { name: 'Soniya Pinjar', email: 'soniya@gmail.com' },
+      { name: 'NidaFazli Nalband', email: 'nida nalband@gmail.com', date: sampleEnd }
+    ];
+    // assign two-day gaps backward from sampleEnd
+    let offsetDays = 2;
+    for (let i = 0; i < sample.length; i++) {
+      const s = sample[i];
+      let dt = s.date ? new Date(s.date) : new Date(sampleEnd.getTime() - (offsetDays * 24*60*60*1000));
+      if (!s.date) offsetDays += 2;
+      const dStr = `${String(dt.getDate()).padStart(2,'0')}/${String(dt.getMonth()+1).padStart(2,'0')}/${dt.getFullYear()}`;
+      addRow(s.name, s.email, dStr);
+    }
+    showSection('students');
+  } catch(e){ console.error(e); }
+}
+
+async function adminReply(ts) {
+  const reply = prompt('Enter reply for this query:');
+  if (!reply) return;
+  const token = localStorage.getItem('mmec_token');
+  try {
+    const res = await fetch('/api/admin/reply', {
+      method: 'POST',
+      headers: token ? {'X-Session-Token': token, 'Content-Type': 'application/json'} : {'Content-Type': 'application/json'},
+      body: JSON.stringify({ ts, reply })
+    });
+    const j = await res.json();
+    if (j.ok) {
+      alert('Reply saved');
+      loadUnansweredQueries();
+      loadDashboardStats();
+    } else alert('Error: ' + (j.error||'unknown'))
+  } catch (e) { alert('Error: ' + e.message) }
+}
+
+async function adminDeleteLog(ts) {
+  if (!confirm('Delete this log entry?')) return;
+  const token = localStorage.getItem('mmec_token');
+  try {
+    const res = await fetch('/api/admin/delete_log', {
+      method: 'POST',
+      headers: token ? {'X-Session-Token': token, 'Content-Type': 'application/json'} : {'Content-Type': 'application/json'},
+      body: JSON.stringify({ ts })
+    });
+    const j = await res.json();
+    if (j.ok) {
+      alert('Deleted');
+      loadUnansweredQueries();
+      loadDashboardStats();
+    } else alert('Error: ' + (j.error||'unknown'))
+  } catch (e) { alert('Error: ' + e.message) }
+}
+
+// CRUD Functions
+function showCrudForm(action) {
+  const form = document.getElementById('crud-form');
+  form.style.display = 'block';
+  const fields = document.getElementById('crud-fields');
+  fields.innerHTML = '';
+  const tableSelect = document.getElementById('crud-table');
+  tableSelect.value = 'general_info'; // default
+  updateCrudFields(action);
+  tableSelect.addEventListener('change', () => updateCrudFields(action));
+}
+
+function updateCrudFields(action) {
+  const table = document.getElementById('crud-table').value;
+  const fields = document.getElementById('crud-fields');
+  fields.innerHTML = '';
+  const fieldDefs = {
+    general_info: ['key', 'value'],
+    courses: ['course_code', 'course_name', 'details'],
+    faculty: ['faculty_id', 'name', 'department', 'details'],
+    fee_structure: ['course_type', 'amount', 'details'],
+    timetable: ['day', 'time_slot', 'course_id', 'faculty_id', 'room']
+  };
+  const defs = fieldDefs[table] || [];
+  // First, load existing data if updating or deleting
+  if (action === 'update' || action === 'delete') {
+    loadExistingData(table, defs);
+  }
+  defs.forEach(field => {
+    const label = document.createElement('label');
+    label.textContent = field.replace('_', ' ').toUpperCase() + ': ';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = field;
+    input.required = true;
+    label.appendChild(input);
+    fields.appendChild(label);
+    fields.appendChild(document.createElement('br'));
+    fields.appendChild(document.createElement('br'));
+  });
+  const form = document.getElementById('crud-form-element');
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    // Build payload with nested 'data' object to match server expectations
+    const payload = { table, action, data: {} };
+    defs.forEach(field => {
+      payload.data[field] = form[field].value;
+    });
+    const token = localStorage.getItem('mmec_token');
+    try {
+      const res = await fetch('/api/admin/data', {
+        method: 'POST',
+        headers: token ? {'X-Session-Token': token, 'Content-Type': 'application/json'} : {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const j = await res.json();
+      document.getElementById('crud-result').textContent = j.ok ? (j.message || 'Success') : 'Error: ' + (j.error || 'Unknown');
+      if (j.ok) {
+        // refresh dashboard or lists
+        loadDashboardStats();
+      }
+    } catch (err) {
+      document.getElementById('crud-result').textContent = 'Error: ' + err.message;
+    }
+  };
+}
+
+async function loadExistingData(table, defs) {
+  const token = localStorage.getItem('mmec_token');
+  try {
+    const res = await fetch('/api/admin/data', {
+      method: 'POST',
+      headers: token ? {'X-Session-Token': token, 'Content-Type': 'application/json'} : {'Content-Type': 'application/json'},
+      body: JSON.stringify({ table, action: 'read' })
+    });
+    const j = await res.json();
+    if (j.ok && j.data) {
+      // For simplicity, show first record or list them
+      const dataDiv = document.createElement('div');
+      dataDiv.innerHTML = '<h3>Existing Data:</h3>';
+      j.data.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.textContent = JSON.stringify(item);
+        dataDiv.appendChild(itemDiv);
+      });
+      document.getElementById('crud-fields').appendChild(dataDiv);
+    }
+  } catch (e) {
+    console.error('Error loading existing data', e);
+  }
+}
+
+// Load stats on page load
+document.addEventListener('DOMContentLoaded', () => {
+  showSection('dashboard');
+  try{
+    const name = localStorage.getItem('mmec_name') || localStorage.getItem('mmec_user') || '';
+    const el = document.getElementById('admin-greeting');
+    if (el) el.textContent = name ? `Hello  ${name} 👋` : 'Hello Admin 👋';
+  }catch(e){}
+});
+
+// Load student login logs and display
+async function loadStudentLogins() {
+  const token = localStorage.getItem('mmec_token');
+  try {
+    const res = await fetch('/api/admin/logins', { headers: token ? {'X-Session-Token': token} : {} });
+    const j = await res.json();
+    const list = document.getElementById('history-list');
+    list.innerHTML = '';
+    if (j.ok && j.logins && j.logins.length) {
+      const table = document.createElement('table');
+      table.style.width = '100%';
+      const header = table.insertRow();
+      header.insertCell().outerHTML = '<th>Name</th>';
+      header.insertCell().outerHTML = '<th>Email</th>';
+      header.insertCell().outerHTML = '<th>Time</th>';
+      j.logins.forEach(r => {
+        const row = table.insertRow();
+        row.insertCell().textContent = r.name;
+        row.insertCell().textContent = r.email;
+        row.insertCell().textContent = r.time;
+      });
+      list.appendChild(table);
+    } else {
+      list.textContent = 'No student login records found.';
+    }
+  } catch (e) {
+    document.getElementById('history-list').textContent = 'Error: ' + e.message;
+  }
+}
+
+// note: 'Load Student Logins' button removed in favor of table view; keep function available if needed
+</script>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+/* Fullscreen splash styles */
+:root{
+  --overlay: rgba(5,10,30,0.55);
+  --blue: #2563eb;
+}
+html,body{height:100%;margin:0;font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+/* When splash should be non-scrollable */
+body.splash-no-scroll{overflow:hidden;height:100vh}
+.splash-fullscreen{position:relative;min-height:100vh;overflow:hidden}
+.bg-img{position:absolute;top:0;left:0;right:0;bottom:auto;height:100vh;background-image:url('/static/welcome.jpg');background-size:cover;background-position:center;filter:brightness(.9);transform:scale(1.03);animation: bgFadeIn 1.5s ease-out, bgMove 20s ease-in-out infinite}
+.bg-overlay{position:absolute;top:0;left:0;right:0;bottom:auto;height:100vh;background:linear-gradient(180deg,rgba(0,0,0,0.25),rgba(0,0,0,0.45));backdrop-filter:blur(4px)}
+.splash-content{position:relative;z-index:3;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:2rem;padding-top:6rem;animation: contentFadeIn 2s ease-out 0.5s both;transition: all 0.35s ease}
+.splash-logo{width:96px;height:96px;object-fit:contain;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.45);margin-bottom:1rem;animation: logoFloat 3s ease-in-out infinite}
+.splash-title{font-size:clamp(1.4rem,3vw,2.6rem);margin:0 0 1rem;animation: titleSlideUp 1.5s ease-out 1s both}
+.splash-sub{opacity:.9;margin:0 0 1.5rem;animation: subFadeIn 1.5s ease-out 1.2s both}
+.splash-cta{margin-top:24px}
+.splash-cta .btn{padding:.9rem 1.6rem;font-weight:600;background:rgba(255,255,255,0.95);color:#07243b;border-radius:12px;box-shadow:0 10px 25px rgba(2,6,23,0.12);backdrop-filter:blur(6px);transition:transform .3s ease,box-shadow .3s ease,background .3s ease}
+.splash-cta .btn:hover{transform:translateY(-3px);box-shadow:0 16px 35px rgba(2,6,23,0.14)}
+
+/* Top Navigation Bar */
+.top-nav{display:none}
+.nav-links{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap}
+.nav-links a{color:#fff;text-decoration:none;font-weight:500;padding:0.5rem 1rem;border-radius:20px;transition:all .3s ease;font-size:1.1rem;transform:scale(1)}
+.nav-links a:hover{background:var(--blue);color:#fff;transform:scale(1.05);box-shadow:0 4px 15px rgba(37,99,235,0.3)}
+.nav-links a:active{transform:scale(0.95)}
+.nav-cta .btn{background:var(--blue);padding:0.5rem 1rem;font-size:0.9rem}
+.nav-cta .btn:hover{background:#1d4ed8}
+
+@keyframes bgFadeIn {
+  from { opacity: 0; transform: scale(1.05); }
+  to { opacity: 1; transform: scale(1.03); }
+}
+@keyframes contentFadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes titleSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes subFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes navFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes moveBackground {
+  0% { transform: scale(1.03) translateY(0); }
+  50% { transform: scale(1.05) translateY(-10px); }
+  100% { transform: scale(1.03) translateY(0); }
+}
+@keyframes bgMove {
+  0% { transform: scale(1.03) translateX(0) translateY(0); }
+  25% { transform: scale(1.04) translateX(5px) translateY(-5px); }
+  50% { transform: scale(1.05) translateX(0) translateY(-10px); }
+  75% { transform: scale(1.04) translateX(-5px) translateY(-5px); }
+  100% { transform: scale(1.03) translateX(0) translateY(0); }
+}
+
+
+@media (max-width:768px){
+  .top-nav{flex-direction:column;gap:1rem;padding:1rem}
+  .nav-links{justify-content:center}
+  .nav-cta{margin-top:0.5rem}
+}
+@media (max-width:520px){
+  .splash-logo{width:72px;height:72px}
+  .splash-title{font-size:1.4rem}
+  .nav-links{flex-wrap:wrap;gap:0.5rem}
+  .nav-links a{padding:0.3rem 0.6rem;font-size:0.8rem}
+}
+/* College Information Sections */
+.info-section {
+  padding: 4rem 2rem;
+  background: linear-gradient(to bottom right,#e6fffa,#e0f2fe);
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+.info-section .container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+.info-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--blue);
+}
+.info-section p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.info-section ul {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+  display: inline-block;
+}
+.info-section li {
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+.info-section li:before {
+  content: "•";
+  color: var(--blue);
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+/* page-specific css (splash) */
+body{background:linear-gradient(to bottom right,#e6fffa,#e0f2fe)}

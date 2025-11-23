@@ -1,0 +1,9 @@
+Flask>=2.0
+python-dotenv
+openai
+google-generativeai
+reportlab
+requests
+beautifulsoup4
+scikit-learn
+joblib

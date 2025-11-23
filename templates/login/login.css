@@ -1,0 +1,11 @@
+/* login styles */
+@import url('../common/common.css');
+.container{max-width:420px}
+.card{transition:transform .18s ease, box-shadow .18s ease;max-width:420px;margin:40px auto}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(2,6,23,0.08)}
+label.small{display:block;margin:8px 0}
+input[type=email],input[type=password]{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef2}
+.btn{width:auto;padding:10px 14px;border-radius:999px;transition:transform .12s ease,box-shadow .12s ease}
+.btn:active{transform:translateY(1px)}
+
+.small{display:inline-block;margin-left:8px}
