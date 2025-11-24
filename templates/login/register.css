@@ -1,6 +1,0 @@
-@import url('../common/common.css');
-.container{max-width:480px}
-.card{max-width:480px;margin:36px auto;padding:20px}
-label.small{display:block;margin:8px 0}
-input{width:100%;padding:10px;border-radius:8px;border:1px solid #e6eef2}
-.btn{padding:10px 14px;border-radius:999px}
